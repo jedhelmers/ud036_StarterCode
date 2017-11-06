@@ -10,10 +10,10 @@ main_page_head = '''
 <head>
     <meta charset="utf-8">
     <title>Fresh Tomatoes!</title>
-
     <!-- Bootstrap 3 -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+    <script src="https://use.fontawesome.com/b930a5fec5.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <style type="text/css" media="screen">
@@ -55,6 +55,9 @@ main_page_head = '''
             left: 0;
             top: 0;
             background-color: white;
+        }
+        .fa {
+            color: #0072cf;
         }
     </style>
     <script type="text/javascript" charset="utf-8">
@@ -101,7 +104,6 @@ main_page_content = '''
         </div>
       </div>
     </div>
-
     <!-- Main Page Content -->
     <div class="container">
       <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -125,6 +127,7 @@ movie_tile_content = '''
 <div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
     <img src="{poster_image_url}" width="220" height="342">
     <h2>{movie_title}</h2>
+    {movie_ratings}
 </div>
 '''
 
@@ -141,12 +144,26 @@ def create_movie_tiles_content(movies):
         trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
                               else None)
 
+        # Use fontawesome icons for star ratings
+        movie_stars = ''
+        movie_ratings = movie.ratings
+        flag = 0
+        for i in range(0, 5):
+            if i < int(movie_ratings):
+                movie_stars += '<i class="fa fa-star" aria-hidden="true"></i>'  #full star
+            elif isinstance(movie_ratings, float) and flag < 1:  #isinstance checks for non-integer ratings
+                movie_stars += '<i class="fa fa-star-half-o" aria-hidden="true"></i>'
+                flag += 1
+            else:
+                movie_stars += '<i class="fa fa-star-o" aria-hidden="true"></i>'  #empty stars
         # Append the tile for the movie with its content filled in
         content += movie_tile_content.format(
             movie_title=movie.title,
             poster_image_url=movie.poster_image_url,
-            trailer_youtube_id=trailer_youtube_id
+            trailer_youtube_id=trailer_youtube_id,
+            movie_ratings = movie_stars
         )
+
     return content
 
 
